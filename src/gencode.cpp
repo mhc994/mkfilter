@@ -147,21 +147,21 @@ static void comp_fir()
 
 static void comp_iir()
 {
-	printf("#define NZEROS %d\n", nzeros);
-	printf("#define NPOLES %d\n", npoles);
-	printf("#define GAIN   %15.9e\n\n", pbgain);
-	printf("static float xv[NZEROS+1], yv[NPOLES+1];\n\n");
+	printf("static float filterloop(float next_input_value)\n");
+	printf("{\n");
+	printf("    const int NZEROS = %d;\n", nzeros);
+	printf("    const int NPOLES = %d;\n", npoles);
+	printf("    const float GAIN = %15.9e;\n\n", pbgain);
+	printf("    static float xv[NZEROS+1], yv[NPOLES+1];\n\n");
 	margin = 20;
-	printf("static void filterloop()\n");
-	printf("  { for (;;)\n");
-	printf("      { "); pr_shiftdown("xv", nzeros); putchar('\n');
-	printf("        xv[%d] = `next input value' / GAIN;\n", nzeros);
-	printf("        "); pr_shiftdown("yv", npoles); putchar('\n');
-	printf("        yv[%d] =", npoles);
+	printf("    "); pr_shiftdown("xv", nzeros); putchar('\n');
+	printf("    xv[%d] = next_input_value / GAIN;\n", nzeros);
+	printf("    "); pr_shiftdown("yv", npoles); putchar('\n');
+	printf("    yv[%d] =", npoles);
 	pr_xpart("xv"); pr_ypart("yv"); printf(";\n");
-	printf("        `next output value' = yv[%d];\n", npoles);
-	printf("      }\n");
-	printf("  }\n\n");
+	printf("    return yv[%d];\n", npoles);
+
+	printf("}\n\n");
 }
 
 
